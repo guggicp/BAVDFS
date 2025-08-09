@@ -1,4 +1,6 @@
 #include <iostream>
+#include <../src/include/common/constants.h>
+#include <../src/include/index/faiss_index.h>
 
 int main()
 {
