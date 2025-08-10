@@ -3,6 +3,12 @@
 //
 
 #include "index/faiss_index.h"
+#include <faiss/Index.h>
+
+FaissIndex::FaissIndex(faiss::Index* index) 
+{
+
+}
 
 void FaissIndex::insert_vectors(const std::vector<float>& data, uint64_t label)
 {

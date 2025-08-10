@@ -1,4 +1,6 @@
 /third_party/installed/
 /third_party/src/
 /.idea
+/.cache
 /build/
+/tmp/

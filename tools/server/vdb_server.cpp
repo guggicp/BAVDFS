@@ -1,9 +1,21 @@
-#include <iostream>
-#include <../src/include/common/constants.h>
-#include <../src/include/index/faiss_index.h>
+#include <index/index_factory.h>
+#include <logger/logger.h>
+#include <spdlog/logger.h>
+#include "httpserver/http_server.h"
+
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+
+    int dim = 1;
+
+    init_global_logger();
+    set_log_level(spdlog::level::debug);
+    GlobalLogger->info("Global logger initialized!");
+    IndexFactory *globalIndexFactory = getGlobalIndexFactory();
+    globalIndexFactory->init(IndexFactory::IndexType::FLAT, dim);
+    GlobalLogger->info("Global IndexFactory initualized!");
+    HttpServer server("localhost", 8080);
+    server.start();
     return 0;
 }
