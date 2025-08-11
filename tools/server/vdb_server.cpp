@@ -3,7 +3,6 @@
 #include <spdlog/logger.h>
 #include "httpserver/http_server.h"
 
-
 int main()
 {
 
@@ -15,7 +14,7 @@ int main()
     IndexFactory *globalIndexFactory = getGlobalIndexFactory();
     globalIndexFactory->init(IndexFactory::IndexType::FLAT, dim);
     GlobalLogger->info("Global IndexFactory initualized!");
-    HttpServer server("localhost", 8080);
+    HttpServer server("localhost", 7781);
     server.start();
     return 0;
 }

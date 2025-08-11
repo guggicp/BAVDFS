@@ -9,7 +9,7 @@
 
 void IndexFactory::init(IndexType type, int dim, MetricType metric)
 {
-    faiss::MetricType faiss_matric = (metric == MetricType::L2 ? faiss::METRIC_L2 : faiss::METRIC_INNER_PRODUCT);
+    faiss::MetricType faiss_matric = ((metric == MetricType::L2) ? faiss::METRIC_L2 : faiss::METRIC_INNER_PRODUCT);
     switch (type)
     {
     case IndexType::FLAT:
