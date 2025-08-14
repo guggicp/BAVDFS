@@ -5,10 +5,7 @@
 #include "index/faiss_index.h"
 #include <faiss/Index.h>
 
-FaissIndex::FaissIndex(faiss::Index* index) 
-{
-
-}
+FaissIndex::FaissIndex(faiss::Index* index) : index(index) {}
 
 void FaissIndex::insert_vectors(const std::vector<float>& data, uint64_t label)
 {
