@@ -68,7 +68,7 @@ void HttpServer::insertHandler(const httplib::Request& req, httplib::Response& r
 
     // analysis JSON request
     rapidjson::Document json_request;
-    json_request.Parse(req.path.c_str());
+    json_request.Parse(req.body.c_str());
 
     // print the input params. of user
     GlobalLogger->info("Insert request parameters: {}", req.body);
