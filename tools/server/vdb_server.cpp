@@ -7,12 +7,14 @@ int main()
 {
 
     int dim = 1;
+    int num_data = 1000;
 
     init_global_logger();
     set_log_level(spdlog::level::debug);
     GlobalLogger->info("Global logger initialized!");
     IndexFactory *globalIndexFactory = getGlobalIndexFactory();
     globalIndexFactory->init(IndexFactory::IndexType::FLAT, dim);
+    globalIndexFactory->init(IndexFactory::IndexType::HNSW, dim, num_data);
     GlobalLogger->info("Global IndexFactory initualized!");
     HttpServer server("localhost", 7781);
     server.start();

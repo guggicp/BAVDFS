@@ -12,6 +12,7 @@ public:
     enum class IndexType
     {
         FLAT,
+        HNSW,
         UNKNOWN=-1,
     };
     enum class MetricType
@@ -19,7 +20,7 @@ public:
         L2,
         IP
     };
-    void init(IndexType type, int dim, MetricType metric = MetricType::L2);
+    void init(IndexType type, int dim, int num_data = 0, MetricType metric = MetricType::L2);
     void *getIndex(IndexType type) const;
 private:
     std::map<IndexType, void*> index_map;

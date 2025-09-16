@@ -537,6 +537,7 @@ PACKAGES=(
     "rapidjson"
     "httplib"
     "spdlog"
+    "hnswlib"
 )
 
 

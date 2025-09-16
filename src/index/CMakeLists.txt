@@ -2,7 +2,7 @@ add_library(
         vectorDB_index
         OBJECT
         faiss_index.cpp
-#        hnswlib_index.cpp
+        hnswlib_index.cpp
         index_factory.cpp
 #        filter_index.cpp
 )
