@@ -60,7 +60,7 @@ IndexFactory::IndexType HttpServer::getIndexTypeFromRequest(const rapidjson::Doc
         {
             return IndexFactory::IndexType::FLAT;
         }
-        else if (index_type_str == "HNSW")
+        if (index_type_str == "HNSW")
         {
             // add support for HNSW
             return IndexFactory::IndexType::HNSW;
@@ -131,10 +131,10 @@ void HttpServer::insertHandler(const httplib::Request& req, httplib::Response& r
             faissIndex->insert_vectors(data, label);
             break;
         }
-    case IndexFactory::IndexType::HNSW:
+        case IndexFactory::IndexType::HNSW:
             {
-                HNSWLibIndex *hnswIndex = static_cast<HNSWLibIndex*>(index);
-                hnswIndex->search_vectors(data, label);
+                HNSWLibIndex *hnswIndex = static_cast<HNSWLibIndex *>(index);
+                hnswIndex->insert_vectors(data, label);  // bug find
                 break;
             }
         default:
@@ -215,6 +215,12 @@ void HttpServer::searchHandler(const httplib::Request& req, httplib::Response& r
             break;
         }
         // add the dealing logi. of others
+    case IndexFactory::IndexType::HNSW:
+        {
+            HNSWLibIndex *hnswIndex = static_cast<HNSWLibIndex*>(index);
+            results = hnswIndex->search_vectors(query, k);
+            break;
+        }
     default:
         break;
     }

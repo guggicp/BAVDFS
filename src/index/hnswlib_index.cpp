@@ -23,16 +23,25 @@ void HNSWLibIndex::insert_vectors(const std::vector<float>& data, uint64_t label
 
 std::pair<std::vector<long>, std::vector<float>> HNSWLibIndex::search_vectors(const std::vector<float>& query, int k, int ef_search)
 {
+    std::vector<long> indices(k, -1);
+    std::vector<float> distances(k, -1);
+    int j = 0;
+
     index->setEf(ef_search);
     auto result = index->searchKnn(query.data(), k);
-    std::vector<long> indices(k);
-    std::vector<float> distances(k);
-    for (int j = 0; j < k; j++)
+
+    while (!result.empty())
     {
-        auto item = result.top();
+        auto item = result.top();  // attention! avoid cross-border issues
         indices[j] = item.second;
         distances[j] = item.first;
         result.pop();
+        j++;
+        if (j == k)
+        {
+            break;
+        }
     }
+
     return {indices, distances};
 }
