@@ -9,6 +9,8 @@
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
+
+#include "index/hnswlib_index.h"
 #include "index/index_factory.h"
 
 HttpServer::HttpServer(const std::string& host, int port) : host(host), port(port)
@@ -57,6 +59,11 @@ IndexFactory::IndexType HttpServer::getIndexTypeFromRequest(const rapidjson::Doc
         if (index_type_str == "FLAT")
         {
             return IndexFactory::IndexType::FLAT;
+        }
+        if (index_type_str == "HNSW")
+        {
+            // add support for HNSW
+            return IndexFactory::IndexType::HNSW;
         }
     }
     return IndexFactory::IndexType::UNKNOWN;
@@ -124,7 +131,12 @@ void HttpServer::insertHandler(const httplib::Request& req, httplib::Response& r
             faissIndex->insert_vectors(data, label);
             break;
         }
-        // others
+        case IndexFactory::IndexType::HNSW:
+            {
+                HNSWLibIndex *hnswIndex = static_cast<HNSWLibIndex *>(index);
+                hnswIndex->insert_vectors(data, label);  // bug find
+                break;
+            }
         default:
             break;
     }
@@ -203,6 +215,12 @@ void HttpServer::searchHandler(const httplib::Request& req, httplib::Response& r
             break;
         }
         // add the dealing logi. of others
+    case IndexFactory::IndexType::HNSW:
+        {
+            HNSWLibIndex *hnswIndex = static_cast<HNSWLibIndex*>(index);
+            results = hnswIndex->search_vectors(query, k);
+            break;
+        }
     default:
         break;
     }
