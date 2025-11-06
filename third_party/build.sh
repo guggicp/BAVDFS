@@ -531,6 +531,65 @@ function build_etcdclient() {
     make -C build -j ${PARALLEL} install
 }
 
+function build_diskann() {
+    # 依赖 OpenBLAS（与 Faiss 共享依赖）
+    build_openblas
+
+    # DiskANN 源码信息（使用官方 Release 版本）
+    local URL="https://gh.llkk.cc/https://github.com/microsoft/DiskANN/archive/refs/tags/0.7.0.tar.gz"
+    local FILE=diskann-0.7.0.tar.gz
+    local DIR=DiskANN-0.7.0
+    local MD5SUM="5d52e9a912cd3b64e2dd12b1bb3d05d3"  # 替换为实际 MD5
+
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] 开始处理 diskann..."
+
+    # 下载源码（若未存在）
+    [ -f ${TP_SOURCE_DIR}/${FILE} ] || wget $URL -O ${TP_SOURCE_DIR}/${FILE}
+    # 校验文件完整性
+    check_md5 ${TP_SOURCE_DIR}/${FILE} $MD5SUM
+    # 解压源码（若未解压）
+    [ -d ${TP_SOURCE_DIR}/${DIR} ] || tar xvf ${TP_SOURCE_DIR}/${FILE} -C ${TP_SOURCE_DIR}
+
+    # 进入源码目录
+    cd ${TP_SOURCE_DIR}/${DIR}
+
+    # 应用补丁（若有）
+    PATCHED_MARK="patched_mark"
+    if [[ ! -f "${PATCHED_MARK}" ]]; then
+        # 若需要修改源码，可在 patches 目录添加对应补丁
+        if [ -f "${TP_PATCH_DIR}/diskann-0.5.0.patch" ]; then
+            patch -p1 <"${TP_PATCH_DIR}/diskann-0.5.0.patch"
+            echo "Applied diskann patch"
+        else
+            echo "No patch for diskann found, proceeding without patching."
+        fi
+        touch "${PATCHED_MARK}"  # 标记已处理补丁
+    fi
+
+    # 清理旧编译目录
+    rm -rf build
+    mkdir -p build
+    cd build
+
+    # 编译配置（与项目统一安装路径）
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] 运行 cmake 配置..."
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DCMAKE_INSTALL_PREFIX=${TP_INSTALL_DIR} \
+        -DTP_INSTALL_DIR=${TP_INSTALL_DIR} \
+        -DDISKANN_BUILD_TESTS=OFF \
+        -DDISKANN_BUILD_BENCHMARKS=OFF \
+        -DDISKANN_BUILD_EXAMPLES=OFF
+
+    # 编译并安装
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] 开始编译（使用 ${PARALLEL} 个线程）..."
+    make -j ${PARALLEL}
+    make install
+
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] diskann 编译安装完成"
+}
+
 
 PACKAGES=(
     "faiss"
@@ -538,10 +597,10 @@ PACKAGES=(
     "httplib"
     "spdlog"
     "hnswlib"
+    "diskann"
 )
 
 
-#    "hnswlib"
 #    "gflags"
 #    "glog"
 #    "zlib"
